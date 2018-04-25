@@ -57,10 +57,13 @@ endif
 
 if !exists("*SourceHandler")
 func SourceHandler(channel,msg)
-  let l:status=matchstr(a:msg,'\m\(Already up to date\)*\(unable to access\)*')
-  if l:status=='Already up to date'
-    echom "已经最新"
+  let l:status=matchstr(a:msg,'\m\(Already\)*\(unable to access\)*')
+  if l:status=='Already'
+    "有些是Already up to date 有些是 Already up-to-date
+    "    正常更新不给提示
+"    echom "已经最新"
   elseif l:status=='unable to access'
+    "实际上 错误不会走这里，会走下面
     echom "Fail to connect"
   else
     echom a:msg
