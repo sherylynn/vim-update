@@ -53,6 +53,7 @@ if !exists("*Update")
     let dot_pull_job=job_start("git -C " . $DOTFILE . " pull",{"out_cb":"SourceHandler","err_cb":"ErrHandler"})
     let update_pull_job=job_start("git -C " . $UPDATE . " pull",{"out_cb":"SourceHandler","err_cb":"ErrHandler"})
     let elisp_pull_job=job_start("git -C " . $ELISP . " pull",{"out_cb":"SourceHandler","err_cb":"ErrHandler"})
+    "需要注意的是任务名的变量不能相同，另外就是增加路径的时候如何自定义好任务变量名
   endfunc
 else
   "  正常更新不再提示消息打断用户
