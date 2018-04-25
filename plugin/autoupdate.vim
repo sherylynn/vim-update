@@ -1,5 +1,5 @@
 "need to config vimrc path
-let $DOTFILE=expand("$HOME/vimcode")
+let $DOTFILE=expand("$HOME/.vim")
 "source vimrc的时候会重新定义一下fuck，所以要想不触发错误，得在定义时加入判断
 if !exists("*Fuck")
 function! Fuck()
