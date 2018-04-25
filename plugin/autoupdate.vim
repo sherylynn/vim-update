@@ -50,9 +50,9 @@ augroup END
 "vimscript中用.而不是+链接字符串
 if !exists("*Update")
   func Update()
-    let git_pull_job=job_start("git -C " . $DOTFILE . " pull",{"out_cb":"SourceHandler","err_cb":"ErrHandler"})
-    let git_pull_job=job_start("git -C " . $UPDATE . " pull",{"out_cb":"SourceHandler","err_cb":"ErrHandler"})
-    let git_pull_job=job_start("git -C " . $ELISP . " pull",{"out_cb":"SourceHandler","err_cb":"ErrHandler"})
+    let dot_pull_job=job_start("git -C " . $DOTFILE . " pull",{"out_cb":"SourceHandler","err_cb":"ErrHandler"})
+    let update_pull_job=job_start("git -C " . $UPDATE . " pull",{"out_cb":"SourceHandler","err_cb":"ErrHandler"})
+    let elisp_pull_job=job_start("git -C " . $ELISP . " pull",{"out_cb":"SourceHandler","err_cb":"ErrHandler"})
   endfunc
 else
   "  正常更新不再提示消息打断用户
