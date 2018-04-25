@@ -1,8 +1,8 @@
 "need to config vimrc path
 let $DOTFILE=expand("$HOME/.vim")
-"source vimrc的时候会重新定义一下fuck，所以要想不触发错误，得在定义时加入判断
-if !exists("*Fuck")
-function! Fuck()
+"source vimrc的时候会重新定义一下Sync_update，所以要想不触发错误，得在定义时加入判断
+if !exists("*Sync_update")
+function! Sync_update()
   :cd $DOTFILE
   "想尝试通过--git-dir 或者 -C的方式直接pull，似乎不行
   :!git pull
@@ -10,10 +10,10 @@ function! Fuck()
   :cd -
   "上面的回车是没用的，还是得进回车
   source $MYVIMRC
-  echom "已更新"
+"  echom "已更新"
 endfunction
 else
-  echom "updated"
+"  echom "updated"
 endif
 
 augroup autoupdate
@@ -41,7 +41,7 @@ augroup autoupdate
     "let job1 = jobstart(['bash'], extend({'shell': 'shell 1'}, s:callbacks))
     let job2 = jobstart(["git -C " . $DOTFILE . " pull"], extend({'shell': 'shell 2'}, s:callbacks))
   else
-    autocmd VimEnter * nested call Fuck()
+    autocmd VimEnter * nested call Sync_update()
   endif
   "-------------------------------------------------------------------------
 augroup END
@@ -51,23 +51,24 @@ if !exists("*Update")
     let git_pull_job=job_start("git -C " . $DOTFILE . " pull",{"out_cb":"SourceHandler","err_cb":"ErrHandler"})
   endfunc
 else
-  echom "updated"
+  "  正常更新不再提示消息打断用户
+"  echom "已经执行过更新"
 endif
-if !exists("*PlugHandler")
-func PlugHandler(channel,msg)
-  echo "Plug" . a:msg
+
+if !exists("*SourceHandler")
+func SourceHandler(channel,msg)
+  if matchstr(a:msg,'Already up to date')=='Already up to date'
+    echom "已经最新"
+  elseif matchstr(a:msg,'unable to access')=='unable to access'
+    echom "Fail to connect"
+  endif
+  source $MYVIMRC
 endfunc
 endif
 
 if !exists("*ErrHandler")
 func ErrHandler(channel,msg)
   echo "Err" . a:msg
-endfunc
-endif
-if !exists("*SourceHandler")
-func SourceHandler(channel,msg)
-  echo "Suc" . a:msg
-  source $MYVIMRC
 endfunc
 endif
 
