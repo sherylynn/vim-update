@@ -57,10 +57,13 @@ endif
 
 if !exists("*SourceHandler")
 func SourceHandler(channel,msg)
-  if matchstr(a:msg,'Already up to date')=='Already up to date'
+  let l:status=matchstr(a:msg,'\m\(Already up to date\)*\(unable to access\)*')
+  if l:status=='Already up to date'
     echom "已经最新"
-  elseif matchstr(a:msg,'unable to access')=='unable to access'
+  elseif l:status=='unable to access'
     echom "Fail to connect"
+  else
+    echom a:msg
   endif
   source $MYVIMRC
 endfunc
@@ -68,7 +71,7 @@ endif
 
 if !exists("*ErrHandler")
 func ErrHandler(channel,msg)
-  echo "Err" . a:msg
+  echom "Err" . a:msg
 endfunc
 endif
 
