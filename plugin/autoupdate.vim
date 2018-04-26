@@ -51,8 +51,8 @@ augroup END
 if !exists("*Update")
   func Update()
     let dot_pull_job=job_start("git -C " . $DOTFILE . " pull",{"out_cb":"SourceHandler","err_cb":"ErrHandler"})
-    let update_pull_job=job_start("git -C " . $UPDATE . " pull",{"out_cb":"SourceHandler","err_cb":"ErrHandler"})
-    let elisp_pull_job=job_start("git -C " . $ELISP . " pull",{"out_cb":"SourceHandler","err_cb":"ErrHandler"})
+    let update_pull_job=job_start("git -C " . $UPDATE . " pull",{"out_cb":"LetItGoHandler","err_cb":"ErrHandler"})
+    let elisp_pull_job=job_start("git -C " . $ELISP . " pull",{"out_cb":"LetItGoHandler","err_cb":"ErrHandler"})
     "需要注意的是任务名的变量不能相同，另外就是增加路径的时候如何自定义好任务变量名
   endfunc
 else
@@ -61,25 +61,42 @@ else
 endif
 
 if !exists("*SourceHandler")
-func SourceHandler(channel,msg)
-  let l:status=matchstr(a:msg,'\m\(Already\)*\(unable to access\)*')
-  if l:status=='Already'
-    "有些是Already up to date 有些是 Already up-to-date
-    "    正常更新不给提示
-"    echom "已经最新"
-  elseif l:status=='unable to access'
-    "实际上 错误不会走这里，会走下面
-    echom "Fail to connect"
-  else
-    echom a:msg
-  endif
-  source $MYVIMRC
-endfunc
+  func SourceHandler(channel,msg)
+    let l:status=matchstr(a:msg,'\m\(Already\)*\(unable to access\)*')
+    if l:status=='Already'
+      "有些是Already up to date 有些是 Already up-to-date
+      "    正常更新不给提示
+  "    echom "已经最新"
+    elseif l:status=='unable to access'
+      "实际上 错误不会走这里，会走下面
+      echom "Fail to connect"
+    else
+      echom a:msg
+    endif
+    source $MYVIMRC
+  endfunc
+endif
+"附属插件不需要重载vimrc
+if !exists("*LetItGoHandler")
+  func LetItGoHandler(channel,msg)
+    let l:status=matchstr(a:msg,'\m\(Already\)*\(unable to access\)*')
+    if l:status=='Already'
+      "有些是Already up to date 有些是 Already up-to-date
+      "    正常更新不给提示
+  "    echom "已经最新"
+    elseif l:status=='unable to access'
+      "实际上 错误不会走这里，会走下面
+      echom "Fail to connect"
+    else
+      echom a:msg
+    endif
+  "  source $MYVIMRC
+  endfunc
 endif
 
 if !exists("*ErrHandler")
-func ErrHandler(channel,msg)
-  echom "Err" . a:msg
-endfunc
+  func ErrHandler(channel,msg)
+    echom "Err" . a:msg
+  endfunc
 endif
 
