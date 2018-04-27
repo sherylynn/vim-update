@@ -79,7 +79,7 @@ endif
 "附属插件不需要重载vimrc
 if !exists("*LetItGoHandler")
   func LetItGoHandler(channel,msg)
-    let l:status=matchstr(a:msg,'\m\(Already\)*\(unable to access\)*')
+    let l:status=matchstr(a:msg,'\m\(Already\)|\(unable to access\)')
     if l:status=='Already'
       "有些是Already up to date 有些是 Already up-to-date
       "    正常更新不给提示
