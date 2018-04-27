@@ -1,8 +1,14 @@
 "why run twice ?
 "autocmd twice ?
+"不知道为啥这个绑定激活两次
+"或许和nerdtree本身的特性有关系
+" 判断后无关
+" 有没有nested也是一样
 augroup WorkDirUpdate
-  autocmd BufNewFile,BufRead * call GitPullable(expand('%:h'))
-  autocmd DirChanged * call GitPullable(".")
+  "清除组内不该有的命令
+  autocmd!
+  autocmd BufNewFile,BufRead * nested call GitPullable(expand('%:h'))
+"  autocmd DirChanged * call GitPullable(".")
   if !exists("*GitHandler")
     func GitHandler(channel,msg)
       echom a:msg
@@ -13,7 +19,6 @@ augroup WorkDirUpdate
       let l:dir_command="ls " . a:dir . "/.git"
       let l:status=matchstr(system(l:dir_command),'\v(config)|(such)')
       if l:status=="config"
-        echom "updateable"
         let l:gitpulljob=job_start("git -C " . expand(a:dir) . " pull",{"callback":"GitHandler"})
       elseif l:status=="such"
   "      echom system(l:dir_command)
@@ -21,4 +26,4 @@ augroup WorkDirUpdate
       endif
     endfunc
   endif
-augroup End
+augroup END
