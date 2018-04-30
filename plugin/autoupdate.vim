@@ -1,7 +1,10 @@
 "need to config vimrc path
-let $DOTFILE=expand("$HOME/.vim")
-let $UPDATE=expand("$HOME/.vim/plugged/vim-update")
-let $ELISP=expand("$HOME/.vim/plugged/vim-elisp")
+if !exists(g:VIMHOME)
+  let g:VIMHOME=".vim"
+endif
+let $DOTFILE=expand("$HOME/" . g:VIMHOME)
+let $UPDATE=expand("$HOME/" . g:VIMHOME . "/plugged/vim-update")
+let $ELISP=expand("$HOME/" . g:VIMHOME . "/plugged/vim-elisp")
 "source vimrc的时候会重新定义一下Sync_update，所以要想不触发错误，得在定义时加入判断
 if !exists("*Sync_update")
 function! Sync_update()
