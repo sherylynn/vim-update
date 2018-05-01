@@ -2,13 +2,13 @@
 if !exists(g:VIMHOME)
   let g:VIMHOME=".vim"
 endif
-let $DOTFILE=expand("$HOME/" . g:VIMHOME)
+let $VIMHOME=expand("$HOME/" . g:VIMHOME)
 let $UPDATE=expand("$HOME/" . g:VIMHOME . "/plugged/vim-update")
 let $ELISP=expand("$HOME/" . g:VIMHOME . "/plugged/vim-elisp")
 "source vimrc的时候会重新定义一下Sync_update，所以要想不触发错误，得在定义时加入判断
 if !exists("*Sync_update")
 function! Sync_update()
-  :cd $DOTFILE
+  :cd $VIMHOME
   "想尝试通过--git-dir 或者 -C的方式直接pull，似乎不行
   :!git pull
   "back to before dir
@@ -44,7 +44,7 @@ augroup autoupdate
     \ 'on_exit': function('s:OnEvent')
     \ }
     "let job1 = jobstart(['bash'], extend({'shell': 'shell 1'}, s:callbacks))
-    let job2 = jobstart(["git -C " . $DOTFILE . " pull"], extend({'shell': 'shell 2'}, s:callbacks))
+    let job2 = jobstart(["git -C " . $VIMHOME . " pull"], extend({'shell': 'shell 2'}, s:callbacks))
   else
     autocmd VimEnter * nested call Sync_update()
   endif
@@ -53,7 +53,7 @@ augroup END
 "vimscript中用.而不是+链接字符串
 if !exists("*Update")
   func Update()
-    let dot_pull_job=job_start("git -C " . $DOTFILE . " pull",{"out_cb":"SourceHandler","err_cb":"ErrHandler"})
+    let dot_pull_job=job_start("git -C " . $VIMHOME . " pull",{"out_cb":"SourceHandler","err_cb":"ErrHandler"})
     let update_pull_job=job_start("git -C " . $UPDATE . " pull",{"out_cb":"LetItGoHandler","err_cb":"ErrHandler"})
     let elisp_pull_job=job_start("git -C " . $ELISP . " pull",{"out_cb":"LetItGoHandler","err_cb":"ErrHandler"})
     "需要注意的是任务名的变量不能相同，另外就是增加路径的时候如何自定义好任务变量名
