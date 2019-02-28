@@ -9,26 +9,45 @@ augroup WorkDirUpdate
   autocmd!
   autocmd BufNewFile,BufRead * nested call GitPullable(expand('%:h'))
 "  autocmd DirChanged * call GitPullable(".")
-  if !exists("*GitHandler")
-    func GitHandler(channel,msg)
-      echom a:msg
-    endfunc
-  endif
-  if !exists("*GitPullable")
-    func GitPullable(dir)
-      if isdirectory(expand(a:dir) . "/.git")==1
-        let l:gitpulljob=job_start("git -C " . expand(a:dir) . " pull",{"callback":"GitHandler"})
-      endif
-    endfunc
-"    func GitPullable(dir)
-"      let l:dir_command="ls " . a:dir . "/.git"
-"      let l:status=matchstr(system(l:dir_command),'\v(config)|(such)')
-"      if l:status=="config"
-"        let l:gitpulljob=job_start("git -C " . expand(a:dir) . " pull",{"callback":"GitHandler"})
-"      elseif l:status=="such"
-"  "      echom system(l:dir_command)
-"      else
-"      endif
-"    endfunc
+  if has("nvim")
+    if !exists("*GitHandler")
+      func GitHandler(job_id, data, event) dict
+        echom string(a:data)
+      endfunc
+    endif
+    let s:callbacks = {
+    \ 'on_stdout': 'GitHandler',
+    \ 'stdout_buffered':v:true
+    \ }
+    if !exists("*GitPullable")
+      func GitPullable(dir)
+        if isdirectory(expand(a:dir) . "/.git")==1
+          let l:gitpulljob= jobstart(["git","-C",expand(a:dir),"pull"],s:callbacks)
+        endif
+      endfunc
+    endif
+  elseif has("job")
+    if !exists("*GitHandler")
+      func GitHandler(channel,msg)
+        echom a:msg
+      endfunc
+    endif
+    if !exists("*GitPullable")
+      func GitPullable(dir)
+        if isdirectory(expand(a:dir) . "/.git")==1
+    "      let l:gitpulljob=job_start("git -C " . expand(a:dir) . " pull",{"callback":"GitHandler"})
+        endif
+      endfunc
+  "    func GitPullable(dir)
+  "      let l:dir_command="ls " . a:dir . "/.git"
+  "      let l:status=matchstr(system(l:dir_command),'\v(config)|(such)')
+  "      if l:status=="config"
+  "        let l:gitpulljob=job_start("git -C " . expand(a:dir) . " pull",{"callback":"GitHandler"})
+  "      elseif l:status=="such"
+  "  "      echom system(l:dir_command)
+  "      else
+  "      endif
+  "    endfunc
+    endif
   endif
 augroup END
