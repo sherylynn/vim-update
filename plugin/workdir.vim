@@ -11,7 +11,7 @@ augroup WorkDirUpdate
 "  autocmd DirChanged * call GitPullable(".")
   if has("nvim")
     if !exists("*GitHandler")
-      func GitHandler(job_id, data, event) dict
+      func g:GitHandler(job_id, data, event) dict
         echom string(a:data)
       endfunc
     endif
@@ -20,7 +20,7 @@ augroup WorkDirUpdate
     \ 'stdout_buffered':v:true
     \ }
     if !exists("*GitPullable")
-      func GitPullable(dir)
+      func g:GitPullable(dir)
         if isdirectory(expand(a:dir) . "/.git")==1
           let l:gitpulljob= jobstart(["git","-C",expand(a:dir),"pull"],s:callbacks)
         endif
@@ -28,14 +28,14 @@ augroup WorkDirUpdate
     endif
   elseif has("job")
     if !exists("*GitHandler")
-      func GitHandler(channel,msg)
+      func g:GitHandler(channel,msg)
         echom a:msg
       endfunc
     endif
     if !exists("*GitPullable")
-      func GitPullable(dir)
+      func g:GitPullable(dir)
         if isdirectory(expand(a:dir) . "/.git")==1
-    "      let l:gitpulljob=job_start("git -C " . expand(a:dir) . " pull",{"callback":"GitHandler"})
+          let l:gitpulljob=job_start("git -C " . expand(a:dir) . " pull",{"callback":"GitHandler"})
         endif
       endfunc
   "    func GitPullable(dir)
@@ -50,4 +50,11 @@ augroup WorkDirUpdate
   "    endfunc
     endif
   endif
+"  command! -bar Test echom "test"
+"  command! -bar Test2 echom expand('%:h')
+"  command! -bar Test4 echom expand('%:p:h/../')
+"  command! -bar GitPullable4 call GitPullable("~/vimcode")
+  command! -bar GitPullable call GitPullable(expand('%:p:h'))
+"  command! -bar GitPullable2 GitPullable(expand('%:h'))
+"  command! -bar GitPullable call g:GitPullable(expand('%:h'))
 augroup END
